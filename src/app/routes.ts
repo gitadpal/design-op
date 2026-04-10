@@ -10,23 +10,26 @@ import { CampaignsPage } from "./pages/campaigns-page";
 import { CampaignDetailPage } from "./pages/campaign-detail-page";
 import { RegisterDevicePage } from "./pages/register-device-page";
 
-export const router = createBrowserRouter([
-  {
-    path: "/login",
-    Component: LoginPage,
-  },
-  {
-    path: "/",
-    Component: AppLayout,
-    children: [
-      { index: true, Component: OverviewPage },
-      { path: "devices", Component: DevicesPage },
-      { path: "devices/register", Component: RegisterDevicePage },
-      { path: "devices/:id", Component: DeviceDetailPage },
-      { path: "clients", Component: ClientsPage },
-      { path: "casts", Component: CastStatusPage },
-      { path: "campaigns", Component: CampaignsPage },
-      { path: "campaigns/:id", Component: CampaignDetailPage },
-    ],
-  },
-]);
+export const router = createBrowserRouter(
+  [
+    {
+      path: "/login",
+      Component: LoginPage,
+    },
+    {
+      path: "/",
+      Component: AppLayout,
+      children: [
+        { index: true, Component: OverviewPage },
+        { path: "devices", Component: DevicesPage },
+        { path: "devices/register", Component: RegisterDevicePage },
+        { path: "devices/:id", Component: DeviceDetailPage },
+        { path: "clients", Component: ClientsPage },
+        { path: "casts", Component: CastStatusPage },
+        { path: "campaigns", Component: CampaignsPage },
+        { path: "campaigns/:id", Component: CampaignDetailPage },
+      ],
+    },
+  ],
+  { basename: "/design-op" }
+);
