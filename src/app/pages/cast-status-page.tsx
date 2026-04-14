@@ -9,13 +9,14 @@ import { castEvents, castSummaryStats, campaignCastSummary, type CastEvent } fro
 
 /* ── Status config ── */
 
-function castTone(status: string) {
-  if (status === "success") return "bg-[#E5F7F3] text-[#00B88F] border border-[#00B88F]/20";
-  if (status === "retrying") return "bg-[#fff0e8] text-[#b8672f] border border-[#b8672f]/20";
-  return "bg-[#fee2e2] text-[#ef4444] border border-[#ef4444]/20";
-}
+const castStatusConfig: Record<string, { label: string; classes: string }> = {
+  started: { label: "Started", classes: "bg-[#fff0e8] text-[#b8672f] border border-[#b8672f]/20" },
+  ended: { label: "Ended", classes: "bg-[#E5F7F3] text-[#00B88F] border border-[#00B88F]/20" },
+  claimed: { label: "Claimed", classes: "bg-[#f0e6fd] text-[#7c3aed] border border-[#7c3aed]/20" },
+  aborted: { label: "Aborted", classes: "bg-[#fee2e2] text-[#ef4444] border border-[#ef4444]/20" },
+};
 
-const filterOptions = ["all", "success", "retrying", "failed"] as const;
+const filterOptions = ["all", "started", "ended", "claimed", "aborted"] as const;
 type FilterOption = (typeof filterOptions)[number];
 
 function formatTime(iso: string) {
@@ -56,7 +57,7 @@ export function CastStatusPage() {
   }, [statusFilter, campaignFilter, search]);
 
   const statusCounts = useMemo(() => {
-    const m = { success: 0, retrying: 0, failed: 0 };
+    const m = { started: 0, ended: 0, claimed: 0, aborted: 0 };
     for (const e of castEvents) m[e.status]++;
     return m;
   }, []);
@@ -78,22 +79,22 @@ export function CastStatusPage() {
           tone="green"
         />
         <SummaryCard
-          label="Success rate"
+          label="Claim rate"
           value={`${castSummaryStats.successRate}%`}
           icon={<CheckCircle2 size={18} />}
           tone="green"
         />
         <SummaryCard
-          label="Retries"
-          value={castSummaryStats.totalRetries.toLocaleString()}
+          label="In progress"
+          value={castSummaryStats.totalStarted.toLocaleString()}
           icon={<Clock size={18} />}
           tone="neutral"
         />
         <SummaryCard
-          label="Failed"
-          value={castSummaryStats.totalFailed.toLocaleString()}
+          label="Aborted"
+          value={castSummaryStats.totalAborted.toLocaleString()}
           icon={<AlertTriangle size={18} />}
-          tone={castSummaryStats.totalFailed > 50 ? "red" : "neutral"}
+          tone={castSummaryStats.totalAborted > 50 ? "red" : "neutral"}
         />
       </div>
 
@@ -223,8 +224,8 @@ export function CastStatusPage() {
                         </TableCell>
                         <TableCell className="py-4 font-mono text-xs">{event.deviceAlias}</TableCell>
                         <TableCell className="py-4">
-                          <span className={["rounded-lg px-2.5 py-1 text-[11px] font-semibold capitalize", castTone(event.status)].join(" ")}>
-                            {event.status}
+                          <span className={["rounded-lg px-2.5 py-1 text-[11px] font-semibold capitalize", castStatusConfig[event.status]?.classes ?? "bg-[#e9eff2] text-[#546875]"].join(" ")}>
+                            {castStatusConfig[event.status]?.label ?? event.status}
                           </span>
                         </TableCell>
                         <TableCell className="py-4 tabular-nums text-xs text-muted-foreground">{formatTime(event.startedAt)}</TableCell>

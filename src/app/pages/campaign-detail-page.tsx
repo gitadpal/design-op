@@ -7,11 +7,13 @@ import { Progress } from "../components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../components/ui/tooltip";
 import { SectionHeader } from "../components/section-header";
-import { campaigns, deviceInteractions, campaignCastSummary } from "../utils/mock-data";
+import { campaigns, deviceInteractions, campaignCastSummary, getAdvertiser } from "../utils/mock-data";
 
 /* ── Status config (platform-aligned) ── */
 
 const statusConfig: Record<string, { label: string; classes: string }> = {
+  review: { label: "In Review", classes: "bg-[#fff0e8] text-[#b8672f] border border-[#b8672f]/20" },
+  approved: { label: "Approved", classes: "bg-[#f0e6fd] text-[#7c3aed] border border-[#7c3aed]/20" },
   active: { label: "Active", classes: "bg-[#E5F7F3] text-[#00B88F] border border-[#00B88F]/20" },
   completed: { label: "Completed", classes: "bg-[#f1f5f9] text-[#64748b] border border-[#64748b]/20" },
   aborted: { label: "Aborted", classes: "bg-[#fee2e2] text-[#ef4444] border border-[#ef4444]/20" },
@@ -143,6 +145,7 @@ export function CampaignDetailPage() {
   }, [campaign]);
 
   const sc = statusConfig[campaign.status] ?? { label: campaign.status, classes: "bg-[#e9eff2] text-[#546875]" };
+  const advertiser = getAdvertiser(campaign.advertiserId);
 
   return (
     <div className="space-y-6 p-6 lg:p-8">
@@ -153,16 +156,21 @@ export function CampaignDetailPage() {
       <SectionHeader
         eyebrow={campaign.id}
         title={campaign.name}
-        description={`${campaign.segment} · ${campaign.castDurationDays}-day campaign · Created by ${campaign.createdBy}`}
+        description={`${campaign.segment} · ${campaign.castDurationDays}-day campaign`}
       />
 
-      {/* ── Header row: status + created info ── */}
+      {/* ── Header row: status + advertiser + created info ── */}
       <div className="flex flex-wrap items-center gap-3">
         <span className={["rounded-lg px-3 py-1.5 text-xs font-semibold capitalize", sc.classes].join(" ")}>
           {sc.label}
         </span>
         <span className="text-sm text-muted-foreground">
-          Created {formatDate(campaign.createdAt)} by <span className="font-medium text-foreground">{campaign.createdBy}</span>
+          Advertiser: <span className="font-medium text-foreground">{advertiser?.name ?? campaign.createdBy}</span>
+          {advertiser?.company && <span className="text-muted-foreground"> ({advertiser.company})</span>}
+        </span>
+        <span className="text-[#d8e8e4]">|</span>
+        <span className="text-sm text-muted-foreground">
+          Created {formatDate(campaign.createdAt)}
         </span>
       </div>
 
@@ -193,14 +201,14 @@ export function CampaignDetailPage() {
               <div className="grid gap-5 md:grid-cols-3">
                 <div>
                   <div className="mb-2 flex items-center justify-between text-sm">
-                    <MetricTip label="Fill rate" tip="Percentage of available device slots filled by this campaign." />
+                    <MetricTip label="Fill rate" tip="Fill Rate = (Active Devices on Campaign / Eligible Devices in Network) × 100. Measures what share of the network's eligible device supply is currently serving this campaign." />
                     <span className={["font-medium tabular-nums", fillTone(campaign.fillRate)].join(" ")}>{campaign.fillRate}%</span>
                   </div>
                   <Progress value={campaign.fillRate} className="h-2 bg-[#e2efec]" />
                 </div>
                 <div>
                   <div className="mb-2 flex items-center justify-between text-sm">
-                    <MetricTip label="Pacing" tip="Delivery speed vs scheduled timeline. 100% = on track." />
+                    <MetricTip label="Pacing" tip="Pacing = (Actual Tokens Distributed / Expected Tokens Distributed) × 100, where Expected = Total Pool × (Elapsed Days / Duration Days). 100% = on track." />
                     <div className="flex items-center gap-1">
                       {campaign.pacing > 100 && <ArrowUpRight size={13} className="text-[#c44c3f]" />}
                       {campaign.pacing > 0 && campaign.pacing < 80 && <ArrowDownRight size={13} className="text-[#b8672f]" />}
@@ -211,7 +219,7 @@ export function CampaignDetailPage() {
                 </div>
                 <div>
                   <div className="mb-2 flex items-center justify-between text-sm">
-                    <MetricTip label="Pool consumed" tip="Tokens distributed vs total pool deposited by the advertiser." />
+                    <MetricTip label="Pool consumed" tip="Pool Consumed = (Tokens Distributed / Total Token Pool) × 100." />
                     <span className={["font-medium tabular-nums", poolTone(campaign.tokenPoolConsumedPct)].join(" ")}>{campaign.tokenPoolConsumedPct}%</span>
                   </div>
                   <Progress value={campaign.tokenPoolConsumedPct} className="h-2 bg-[#e2efec]" />
@@ -342,10 +350,10 @@ export function CampaignDetailPage() {
                       <TableCell className="text-muted-foreground">{formatTimestamp(interaction.timestamp)}</TableCell>
                       <TableCell>
                         <button
-                          onClick={(e) => { e.stopPropagation(); navigate(`/devices/${interaction.deviceId}`); }}
+                          onClick={(e) => { e.stopPropagation(); navigate(`/devices/${interaction.chipId}`); }}
                           className="font-mono text-[#177e73] hover:underline underline-offset-2"
                         >
-                          {interaction.deviceId}
+                          {interaction.chipId}
                         </button>
                       </TableCell>
                       <TableCell>

@@ -1,6 +1,6 @@
 # AdPal Operation Console
 
-Read-only monitoring dashboard for the AdPal E-ink phone case advertising network. Provides operators with real-time visibility into device fleets, campaign delivery, and token distribution.
+Operations dashboard for the AdPal E-ink phone case advertising network. Provides operators with device fleet monitoring, campaign review, device registration, cast delivery tracking, and token distribution visibility.
 
 ## Overview
 

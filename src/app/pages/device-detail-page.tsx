@@ -145,7 +145,7 @@ export function DeviceDetailPage() {
   const navigate = useNavigate();
   const [previewCampaign, setPreviewCampaign] = useState<CampaignMonitor | null>(null);
 
-  const device = devices.find((d) => d.id === id);
+  const device = devices.find((d) => d.chipId === id);
   if (!device) {
     return (
       <div className="p-6 lg:p-8">
@@ -158,7 +158,7 @@ export function DeviceDetailPage() {
   }
 
   const interactions = deviceInteractions
-    .filter((i) => i.deviceId === device.id)
+    .filter((i) => i.chipId === device.chipId)
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
   const { label: statusLabel, classes: statusClasses } = statusConfig[device.status];
@@ -171,7 +171,7 @@ export function DeviceDetailPage() {
       </button>
 
       <SectionHeader
-        eyebrow={device.id}
+        eyebrow={device.chipId}
         title="Device details"
         description="Identity, activation info, and interaction history."
       />
@@ -180,7 +180,7 @@ export function DeviceDetailPage() {
       <Card className="glass-effect border-0">
         <CardHeader>
           <div className="flex items-center gap-3">
-            <CardTitle>{device.id}</CardTitle>
+            <CardTitle>{device.chipId}</CardTitle>
             <span className={["rounded-full px-2.5 py-1 text-xs font-medium", statusClasses].join(" ")}>
               {statusLabel}
             </span>
@@ -191,10 +191,10 @@ export function DeviceDetailPage() {
             {/* Left column */}
             <div className="space-y-4">
               <SectionCard title="Basics">
-                <InfoField label="Device ID">
+                <InfoField label="Chip ID">
                   <p className="font-mono flex items-center">
-                    {device.id}
-                    <CopyButton value={device.id} />
+                    {device.chipId}
+                    <CopyButton value={device.chipId} />
                   </p>
                 </InfoField>
                 <InfoField label="Manufacturer">
@@ -212,16 +212,16 @@ export function DeviceDetailPage() {
               </SectionCard>
 
               <SectionCard title="Keys">
-                <InfoField label="Device Public Key">
+                <InfoField label="Device PK">
                   <p className="font-mono flex items-center break-all">
-                    {device.devicePubkey}
-                    <CopyButton value={device.devicePubkey} />
+                    {device.devicePk}
+                    <CopyButton value={device.devicePk} />
                   </p>
                 </InfoField>
-                <InfoField label="Bound App Public Key">
+                <InfoField label="Bound App PK">
                   <p className="font-mono flex items-center break-all">
-                    {device.boundAppPubkey}
-                    <CopyButton value={device.boundAppPubkey} />
+                    {device.boundAppPk}
+                    <CopyButton value={device.boundAppPk} />
                   </p>
                 </InfoField>
               </SectionCard>

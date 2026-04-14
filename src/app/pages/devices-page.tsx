@@ -22,7 +22,7 @@ export function DevicesPage() {
     const q = search.toLowerCase();
     const matchesSearch =
       !q ||
-      d.id.toLowerCase().includes(q) ||
+      d.chipId.toLowerCase().includes(q) ||
       d.status.includes(q) ||
       (d.activatedLocation?.country.toLowerCase().includes(q) ?? false) ||
       (d.activatedLocation?.district.toLowerCase().includes(q) ?? false) ||
@@ -54,7 +54,7 @@ export function DevicesPage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by ID, location, campaign..."
+            placeholder="Search by chip ID, location, campaign..."
             className="w-full rounded-xl border border-[#d8e8e4] bg-white/75 py-2.5 pl-9 pr-4 text-sm focus:outline-none focus:border-[#177e73] transition-colors"
           />
         </div>
@@ -84,7 +84,7 @@ export function DevicesPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Device ID</TableHead>
+                <TableHead>Chip ID</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Location</TableHead>
                 <TableHead>Campaign</TableHead>
@@ -105,11 +105,11 @@ export function DevicesPage() {
                   const { label, classes } = statusConfig[device.status];
                   return (
                     <TableRow
-                      key={device.id}
-                      onClick={() => navigate(`/devices/${device.id}`)}
+                      key={device.chipId}
+                      onClick={() => navigate(`/devices/${device.chipId}`)}
                       className="cursor-pointer"
                     >
-                      <TableCell className="py-4 font-mono font-medium">{device.id}</TableCell>
+                      <TableCell className="py-4 font-mono font-medium">{device.chipId}</TableCell>
                       <TableCell className="py-4">
                         <span className={["rounded-full px-2.5 py-1 text-xs font-medium", classes].join(" ")}>
                           {label}

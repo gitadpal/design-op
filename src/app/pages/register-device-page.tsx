@@ -20,8 +20,8 @@ import { registerDevice } from "../utils/mock-data";
 type RegistrationMode = "single" | "batch";
 
 interface CsvRow {
-  deviceId: string;
-  publicKey: string;
+  chipId: string;
+  devicePk: string;
   producedAt: string;
   deviceModel: string;
   manufacturer: string;
@@ -32,7 +32,7 @@ interface ParsedCsv {
   errors: string[];
 }
 
-const CSV_COLUMNS = ["device_id", "public_key", "produced_at", "device_model", "manufacturer"] as const;
+const CSV_COLUMNS = ["chip_id", "device_pk", "produced_at", "device_model", "manufacturer"] as const;
 
 function parseCsvContent(content: string): ParsedCsv {
   const lines = content.split(/\r?\n/).filter((l) => l.trim());
@@ -60,8 +60,8 @@ function parseCsvContent(content: string): ParsedCsv {
     }
 
     const row: CsvRow = {
-      deviceId: cells[colIndex["device_id"]].trim(),
-      publicKey: cells[colIndex["public_key"]].trim(),
+      chipId: cells[colIndex["chip_id"]].trim(),
+      devicePk: cells[colIndex["device_pk"]].trim(),
       producedAt: cells[colIndex["produced_at"]].trim(),
       deviceModel: cells[colIndex["device_model"]].trim(),
       manufacturer: cells[colIndex["manufacturer"]].trim(),
@@ -114,6 +114,7 @@ function parseCsvLine(line: string): string[] {
 function downloadTemplate() {
   const header = CSV_COLUMNS.join(",");
   const example = "DV-8001,0x3af6...82c1,2026-01-15T10:30,iPhone 15 Pro Max,Waveshare";
+  // columns: chip_id, device_pk, produced_at, device_model, manufacturer
   const blob = new Blob([header + "\n" + example + "\n"], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -131,8 +132,8 @@ export function RegisterDevicePage() {
   const [mode, setMode] = useState<RegistrationMode>("single");
 
   // Single-registration state
-  const [deviceId, setDeviceId] = useState("");
-  const [publicKey, setPublicKey] = useState("");
+  const [chipId, setChipId] = useState("");
+  const [devicePk, setDevicePk] = useState("");
   const [producedAt, setProducedAt] = useState(new Date().toISOString().split("T")[0]);
   const [manufacturer, setManufacturer] = useState("");
   const [deviceModel, setDeviceModel] = useState("");
@@ -141,7 +142,7 @@ export function RegisterDevicePage() {
   const [csvFileName, setCsvFileName] = useState<string | null>(null);
   const [parsedCsv, setParsedCsv] = useState<ParsedCsv | null>(null);
 
-  const isValid = deviceId.trim() && publicKey.trim() && producedAt && manufacturer.trim() && deviceModel.trim();
+  const isValid = chipId.trim() && devicePk.trim() && producedAt && manufacturer.trim() && deviceModel.trim();
   const batchValid = parsedCsv && parsedCsv.rows.length > 0;
 
   function handleSubmit(e: React.FormEvent) {
@@ -149,13 +150,13 @@ export function RegisterDevicePage() {
     if (!isValid) return;
 
     registerDevice({
-      id: deviceId.trim(),
-      devicePubkey: publicKey.trim(),
+      chipId: chipId.trim(),
+      devicePk: devicePk.trim(),
       deviceModel: deviceModel.trim(),
       manufacturer: manufacturer.trim(),
       registeredAt: new Date(producedAt).toISOString(),
     });
-    toast.success(`Device ${deviceId} registered and added to stock.`);
+    toast.success(`Device ${chipId} registered and added to stock.`);
     navigate("/devices");
   }
 
@@ -199,8 +200,8 @@ export function RegisterDevicePage() {
 
     for (const row of parsedCsv!.rows) {
       registerDevice({
-        id: row.deviceId,
-        devicePubkey: row.publicKey,
+        chipId: row.chipId,
+        devicePk: row.devicePk,
         deviceModel: row.deviceModel,
         manufacturer: row.manufacturer,
         registeredAt: new Date(row.producedAt).toISOString(),
@@ -255,22 +256,22 @@ export function RegisterDevicePage() {
           <CardContent className="pt-6">
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-1.5">
-                <Label htmlFor="deviceId">Device ID</Label>
+                <Label htmlFor="chipId">Chip ID</Label>
                 <Input
-                  id="deviceId"
+                  id="chipId"
                   placeholder="e.g. DV-7001"
-                  value={deviceId}
-                  onChange={(e) => setDeviceId(e.target.value)}
+                  value={chipId}
+                  onChange={(e) => setChipId(e.target.value)}
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="publicKey">Public Key</Label>
+                <Label htmlFor="devicePk">Device PK</Label>
                 <Input
-                  id="publicKey"
+                  id="devicePk"
                   placeholder="e.g. 0x3af6...82c1"
-                  value={publicKey}
-                  onChange={(e) => setPublicKey(e.target.value)}
+                  value={devicePk}
+                  onChange={(e) => setDevicePk(e.target.value)}
                   className="font-mono"
                 />
               </div>
@@ -327,8 +328,8 @@ export function RegisterDevicePage() {
                   <div>
                     <p className="text-sm font-medium">Upload CSV file</p>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      Required columns: <code className="text-[11px] bg-muted/70 px-1 py-0.5 rounded">device_id</code>,{" "}
-                      <code className="text-[11px] bg-muted/70 px-1 py-0.5 rounded">public_key</code>,{" "}
+                      Required columns: <code className="text-[11px] bg-muted/70 px-1 py-0.5 rounded">chip_id</code>,{" "}
+                      <code className="text-[11px] bg-muted/70 px-1 py-0.5 rounded">device_pk</code>,{" "}
                       <code className="text-[11px] bg-muted/70 px-1 py-0.5 rounded">produced_at</code>,{" "}
                       <code className="text-[11px] bg-muted/70 px-1 py-0.5 rounded">device_model</code>,{" "}
                       <code className="text-[11px] bg-muted/70 px-1 py-0.5 rounded">manufacturer</code>
@@ -430,8 +431,8 @@ export function RegisterDevicePage() {
                     <TableHeader>
                       <TableRow className="bg-muted/30">
                         <TableHead className="text-xs">#</TableHead>
-                        <TableHead className="text-xs">Device ID</TableHead>
-                        <TableHead className="text-xs">Public Key</TableHead>
+                        <TableHead className="text-xs">Chip ID</TableHead>
+                        <TableHead className="text-xs">Device PK</TableHead>
                         <TableHead className="text-xs">Produced At</TableHead>
                         <TableHead className="text-xs">Device Model</TableHead>
                         <TableHead className="text-xs">Manufacturer</TableHead>
@@ -441,8 +442,8 @@ export function RegisterDevicePage() {
                       {parsedCsv.rows.slice(0, 50).map((row, i) => (
                         <TableRow key={i}>
                           <TableCell className="text-xs text-muted-foreground">{i + 1}</TableCell>
-                          <TableCell className="text-xs font-medium">{row.deviceId}</TableCell>
-                          <TableCell className="text-xs font-mono">{row.publicKey}</TableCell>
+                          <TableCell className="text-xs font-medium">{row.chipId}</TableCell>
+                          <TableCell className="text-xs font-mono">{row.devicePk}</TableCell>
                           <TableCell className="text-xs">{row.producedAt}</TableCell>
                           <TableCell className="text-xs">{row.deviceModel}</TableCell>
                           <TableCell className="text-xs">{row.manufacturer}</TableCell>

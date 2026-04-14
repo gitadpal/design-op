@@ -9,6 +9,7 @@ import { CastStatusPage } from "./pages/cast-status-page";
 import { CampaignsPage } from "./pages/campaigns-page";
 import { CampaignDetailPage } from "./pages/campaign-detail-page";
 import { RegisterDevicePage } from "./pages/register-device-page";
+import { CampaignReviewPage } from "./pages/campaign-review-page";
 
 export const router = createBrowserRouter(
   [
@@ -26,6 +27,7 @@ export const router = createBrowserRouter(
         { path: "devices/:id", Component: DeviceDetailPage },
         { path: "clients", Component: ClientsPage },
         { path: "casts", Component: CastStatusPage },
+        { path: "reviews", Component: CampaignReviewPage },
         { path: "campaigns", Component: CampaignsPage },
         { path: "campaigns/:id", Component: CampaignDetailPage },
       ],

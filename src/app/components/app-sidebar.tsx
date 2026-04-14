@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   Activity,
+  ClipboardCheck,
   LogOut,
   MonitorSmartphone,
   Radio,
@@ -14,6 +15,7 @@ const navItems = [
   { to: "/", icon: Rows4, label: "Overview" },
   { to: "/devices", icon: MonitorSmartphone, label: "Devices" },
   { to: "/casts", icon: Radio, label: "Cast Status" },
+  { to: "/reviews", icon: ClipboardCheck, label: "Campaign Review" },
   { to: "/campaigns", icon: Activity, label: "Campaign Status" },
   { to: "/clients", icon: SquareStack, label: "App Clients" },
 ];

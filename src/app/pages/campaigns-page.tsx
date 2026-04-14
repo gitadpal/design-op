@@ -6,22 +6,26 @@ import { Progress } from "../components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../components/ui/tooltip";
 import { SectionHeader } from "../components/section-header";
-import { campaigns, type CampaignMonitor } from "../utils/mock-data";
+import { campaigns, getAdvertiser, type CampaignMonitor } from "../utils/mock-data";
 
 /* ── Status config (platform-aligned) ── */
 
 type CampaignStatus = CampaignMonitor["status"];
 
 const statusConfig: Record<CampaignStatus, { label: string; classes: string }> = {
+  review: { label: "In Review", classes: "bg-[#fff0e8] text-[#b8672f] border border-[#b8672f]/20" },
+  approved: { label: "Approved", classes: "bg-[#f0e6fd] text-[#7c3aed] border border-[#7c3aed]/20" },
   active: { label: "Active", classes: "bg-[#E5F7F3] text-[#00B88F] border border-[#00B88F]/20" },
   completed: { label: "Completed", classes: "bg-[#f1f5f9] text-[#64748b] border border-[#64748b]/20" },
   aborted: { label: "Aborted", classes: "bg-[#fee2e2] text-[#ef4444] border border-[#ef4444]/20" },
 };
 
 const statusPriority: Record<CampaignStatus, number> = {
-  active: 0,
-  aborted: 1,
-  completed: 2,
+  review: 0,
+  approved: 1,
+  active: 2,
+  aborted: 3,
+  completed: 4,
 };
 
 /* ── Metric tone helpers ── */
@@ -50,9 +54,9 @@ function poolTone(pct: number) {
 /* ── Tooltip descriptions ── */
 
 const metricTips = {
-  fillRate: "Percentage of available device slots filled by this campaign. Below 85% may indicate insufficient device allocation.",
-  pacing: "Delivery speed relative to the scheduled timeline. 100% = on track. Over 100% = delivering faster than planned. Under 80% = falling behind.",
-  poolConsumed: "Tokens distributed so far versus the total pool deposited by the advertiser. High consumption with low fill rate may indicate overpayment per cast.",
+  fillRate: "Fill Rate = (Active Devices on Campaign / Eligible Devices in Network) × 100. Measures what share of the network's eligible device supply is currently serving this campaign. Below 85% may indicate insufficient device allocation.",
+  pacing: "Pacing = (Actual Tokens Distributed / Expected Tokens Distributed) × 100, where Expected = (Total Pool × Elapsed Days / Duration Days). 100% = on track, >100% = ahead of schedule, <80% = behind.",
+  poolConsumed: "Pool Consumed = (Tokens Distributed / Total Token Pool) × 100. Tokens distributed so far versus the total pool deposited by the advertiser.",
 };
 
 /* ── Formatters ── */
@@ -63,7 +67,7 @@ function formatDate(iso: string) {
 
 /* ── Filter ── */
 
-const filterOptions = ["all", "active", "completed", "aborted"] as const;
+const filterOptions = ["all", "review", "approved", "active", "completed", "aborted"] as const;
 type FilterOption = (typeof filterOptions)[number];
 
 /* ── MetricTip — inline label with hover tooltip ── */
@@ -96,7 +100,7 @@ export function CampaignsPage() {
   }, [filter]);
 
   const counts = useMemo(() => {
-    const m: Record<CampaignStatus, number> = { active: 0, completed: 0, aborted: 0 };
+    const m: Record<CampaignStatus, number> = { review: 0, approved: 0, active: 0, completed: 0, aborted: 0 };
     let totalFill = 0;
     let totalDevices = 0;
     for (const c of campaigns) {
@@ -135,7 +139,7 @@ export function CampaignsPage() {
               filter === f ? "bg-[#143733] text-white" : "text-muted-foreground hover:text-foreground",
             ].join(" ")}
           >
-            {f === "all" ? `All (${campaigns.length})` : `${f} (${counts[f]})`}
+            {f === "all" ? `All (${campaigns.length})` : `${f === "review" ? "In Review" : f} (${counts[f]})`}
           </button>
         ))}
       </div>
@@ -149,7 +153,8 @@ export function CampaignsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[280px]">Campaign</TableHead>
+                <TableHead className="w-[240px]">Campaign</TableHead>
+                <TableHead className="w-[150px]">Advertiser</TableHead>
                 <TableHead className="w-[90px]">Status</TableHead>
                 <TableHead className="w-[150px]"><MetricTip label="Fill rate" tip={metricTips.fillRate} /></TableHead>
                 <TableHead className="w-[170px]"><MetricTip label="Pacing" tip={metricTips.pacing} /></TableHead>
@@ -160,12 +165,14 @@ export function CampaignsPage() {
             <TableBody>
               {sorted.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="py-12 text-center text-muted-foreground">
+                  <TableCell colSpan={7} className="py-12 text-center text-muted-foreground">
                     No campaigns match this filter.
                   </TableCell>
                 </TableRow>
               ) : (
-                sorted.map((c) => (
+                sorted.map((c) => {
+                  const advertiser = getAdvertiser(c.advertiserId);
+                  return (
                   <TableRow
                     key={c.id}
                     onClick={() => navigate(`/campaigns/${c.id}`)}
@@ -180,8 +187,14 @@ export function CampaignsPage() {
                         <span>{c.segment}</span>
                       </div>
                       <div className="mt-1 text-[11px] text-muted-foreground/70">
-                        by {c.createdBy} &middot; {formatDate(c.createdAt)}
+                        {formatDate(c.createdAt)}
                       </div>
+                    </TableCell>
+
+                    {/* Advertiser */}
+                    <TableCell className="py-5">
+                      <p className="text-sm font-medium">{advertiser?.name ?? c.createdBy}</p>
+                      <p className="text-xs text-muted-foreground">{advertiser?.company}</p>
                     </TableCell>
 
                     {/* Status badge */}
@@ -214,7 +227,8 @@ export function CampaignsPage() {
                       <span className="text-sm tabular-nums font-medium">{c.activeDevices.toLocaleString()}</span>
                     </TableCell>
                   </TableRow>
-                ))
+                  );
+                })
               )}
             </TableBody>
           </Table>

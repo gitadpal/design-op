@@ -51,7 +51,7 @@ export function LoginPage() {
                 Real-time visibility into the <span className="text-prism-gradient">E-ink advertising network</span>
               </h1>
               <p className="mt-5 max-w-xl text-base text-white/62">
-                Read-only console for E-ink device fleet, cast delivery, and campaign monitoring across all regions.
+                Operations console for E-ink device fleet, cast delivery, campaign review, and device registration across all regions.
               </p>
             </motion.div>
 
@@ -76,7 +76,7 @@ export function LoginPage() {
 
           <div className="relative z-10 flex items-center gap-2 text-sm text-white/45">
             <ShieldCheck size={16} />
-            Read-only console. No control-plane mutations.
+            Internal operations console. Authorized personnel only.
           </div>
         </section>
 
