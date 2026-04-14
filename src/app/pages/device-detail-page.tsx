@@ -82,7 +82,7 @@ function CampaignPreview({ campaign, onClose }: { campaign: CampaignMonitor; onC
                 {statusConf.label}
               </span>
             </div>
-            <p className="mt-1 text-sm text-muted-foreground font-mono">{campaign.id} &middot; {campaign.segment}</p>
+            <p className="mt-1 text-sm text-muted-foreground font-mono">{campaign.id} &middot; {campaign.segment} &middot; <span className="font-sans">{campaign.tokenSymbol} on {campaign.tokenNetwork}</span></p>
           </div>
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
             <X size={18} />
@@ -102,11 +102,11 @@ function CampaignPreview({ campaign, onClose }: { campaign: CampaignMonitor; onC
         <div className="grid grid-cols-2 gap-4 mb-5">
           <div className="rounded-xl border border-[#d8e8e4] bg-[#f6fbfa] p-3">
             <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Total Token Pool</p>
-            <p className="mt-1 font-['Space_Grotesk'] text-lg font-semibold">{campaign.totalTokenPool.toLocaleString()}</p>
+            <p className="mt-1 font-['Space_Grotesk'] text-lg font-semibold">{campaign.totalTokenPool.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">{campaign.tokenSymbol}</span></p>
           </div>
           <div className="rounded-xl border border-[#d8e8e4] bg-[#f6fbfa] p-3">
             <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Tokens per Cast</p>
-            <p className="mt-1 font-['Space_Grotesk'] text-lg font-semibold">{campaign.tokensPerCast}</p>
+            <p className="mt-1 font-['Space_Grotesk'] text-lg font-semibold">{campaign.tokensPerCast} <span className="text-sm font-normal text-muted-foreground">{campaign.tokenSymbol}</span></p>
           </div>
           <div className="rounded-xl border border-[#d8e8e4] bg-[#f6fbfa] p-3">
             <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Cast Duration</p>

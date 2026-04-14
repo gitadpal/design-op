@@ -198,7 +198,7 @@ export function OverviewPage() {
                 </div>
                 <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
                   <CheckCircle2 size={12} />
-                  <span>{c.activeDevices.toLocaleString()} devices &middot; {c.tokensPerCast} tokens/cast</span>
+                  <span>{c.activeDevices.toLocaleString()} devices &middot; {c.tokensPerCast} {c.tokenSymbol}/cast &middot; {c.tokenNetwork}</span>
                 </div>
               </div>
             ))}

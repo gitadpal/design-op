@@ -286,8 +286,9 @@ function PoolCell({ campaign }: { campaign: CampaignMonitor }) {
       </span>
       <Progress value={campaign.tokenPoolConsumedPct} className="h-1.5 bg-[#e2efec]" />
       <p className="text-[10px] text-muted-foreground tabular-nums">
-        {consumed.toLocaleString()} / {campaign.totalTokenPool.toLocaleString()}
+        {consumed.toLocaleString()} / {campaign.totalTokenPool.toLocaleString()} {campaign.tokenSymbol}
       </p>
+      <p className="text-[10px] text-muted-foreground/60">{campaign.tokenNetwork}</p>
     </div>
   );
 }

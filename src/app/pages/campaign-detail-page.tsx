@@ -169,6 +169,10 @@ export function CampaignDetailPage() {
           {advertiser?.company && <span className="text-muted-foreground"> ({advertiser.company})</span>}
         </span>
         <span className="text-[#d8e8e4]">|</span>
+        <span className="rounded-md bg-[#e3edf0] px-2 py-0.5 text-xs font-medium text-[#2d5968]">
+          {campaign.tokenSymbol} on {campaign.tokenNetwork}
+        </span>
+        <span className="text-[#d8e8e4]">|</span>
         <span className="text-sm text-muted-foreground">
           Created {formatDate(campaign.createdAt)}
         </span>
@@ -225,7 +229,7 @@ export function CampaignDetailPage() {
                   <Progress value={campaign.tokenPoolConsumedPct} className="h-2 bg-[#e2efec]" />
                   <p className="mt-1.5 text-xs text-muted-foreground">
                     <span className="font-['Space_Grotesk'] font-medium text-foreground">{tokensConsumed.toLocaleString()}</span>
-                    {" / "}{campaign.totalTokenPool.toLocaleString()} tokens
+                    {" / "}{campaign.totalTokenPool.toLocaleString()} {campaign.tokenSymbol}
                   </p>
                 </div>
               </div>
@@ -236,24 +240,22 @@ export function CampaignDetailPage() {
             {/* Token pool + Cast & duration side by side */}
             <div className="grid gap-5 md:grid-cols-2">
               <div>
-                <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground mb-3">Token pool</p>
                 <div className="grid gap-3 grid-cols-2">
                   <InfoField label="Total pool">
-                    <p className="font-['Space_Grotesk'] text-lg">{campaign.totalTokenPool.toLocaleString()}</p>
+                    <p className="font-['Space_Grotesk'] text-lg">{campaign.totalTokenPool.toLocaleString()} <span className="text-sm text-muted-foreground">{campaign.tokenSymbol}</span></p>
                   </InfoField>
                   <InfoField label="Tokens per cast">
-                    <p className="font-['Space_Grotesk'] text-lg">{campaign.tokensPerCast}</p>
+                    <p className="font-['Space_Grotesk'] text-lg">{campaign.tokensPerCast} <span className="text-sm text-muted-foreground">{campaign.tokenSymbol}</span></p>
                   </InfoField>
                   <InfoField label="Distributed">
-                    <p className="font-['Space_Grotesk'] text-lg text-[#7c3aed]">{tokensConsumed.toLocaleString()}</p>
+                    <p className="font-['Space_Grotesk'] text-lg text-[#7c3aed]">{tokensConsumed.toLocaleString()} <span className="text-sm text-muted-foreground">{campaign.tokenSymbol}</span></p>
                   </InfoField>
                   <InfoField label="Remaining">
-                    <p className={["font-['Space_Grotesk'] text-lg", campaign.tokenPoolConsumedPct >= 90 ? "text-[#c44c3f]" : "text-[#177e73]"].join(" ")}>{tokensRemaining.toLocaleString()}</p>
+                    <p className={["font-['Space_Grotesk'] text-lg", campaign.tokenPoolConsumedPct >= 90 ? "text-[#c44c3f]" : "text-[#177e73]"].join(" ")}>{tokensRemaining.toLocaleString()} <span className="text-sm text-muted-foreground">{campaign.tokenSymbol}</span></p>
                   </InfoField>
                 </div>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground mb-3">Cast &amp; duration</p>
                 <div className="grid gap-3 grid-cols-2">
                   <InfoField label="Campaign length">
                     <p className="font-['Space_Grotesk'] text-lg">{campaign.castDurationDays} days</p>

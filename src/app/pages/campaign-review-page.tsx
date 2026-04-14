@@ -123,6 +123,7 @@ export function CampaignReviewPage() {
                       </TableCell>
                       <TableCell className="py-5 tabular-nums font-medium font-['Space_Grotesk']">
                         {c.totalTokenPool.toLocaleString()}
+                        <p className="text-[10px] font-normal text-muted-foreground">{c.tokenSymbol} on {c.tokenNetwork}</p>
                       </TableCell>
                       <TableCell className="py-5 tabular-nums text-sm">{c.castDurationDays} days</TableCell>
                       <TableCell className="py-5 tabular-nums text-sm">{c.targetDeviceCount?.toLocaleString() ?? "—"}</TableCell>
@@ -315,10 +316,15 @@ function ReviewDetail({ campaign }: { campaign: CampaignMonitor }) {
 
       {/* Token economics */}
       <div>
-        <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground mb-2">Token economics</p>
+        <div className="flex items-center gap-2 mb-2">
+          <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Token economics</p>
+          <span className="rounded-md bg-[#e3edf0] px-2 py-0.5 text-[10px] font-medium text-[#2d5968]">
+            {campaign.tokenSymbol} on {campaign.tokenNetwork}
+          </span>
+        </div>
         <div className="grid grid-cols-3 gap-4">
-          <DetailField label="Total pool" value={campaign.totalTokenPool.toLocaleString()} highlight />
-          <DetailField label="Per cast" value={String(campaign.tokensPerCast)} />
+          <DetailField label="Total pool" value={`${campaign.totalTokenPool.toLocaleString()} ${campaign.tokenSymbol}`} highlight />
+          <DetailField label="Per cast" value={`${campaign.tokensPerCast} ${campaign.tokenSymbol}`} />
           <DetailField label="Est. total casts" value={Math.floor(campaign.totalTokenPool / campaign.tokensPerCast).toLocaleString()} />
         </div>
       </div>
